@@ -1,0 +1,47 @@
+Controls:
+
+Mouse:
+1)Scroll up/down to zoom in and zoom out
+2)Right click and drag to pan the scene
+3)Left click anywhere on the screen to get the laser ready, and release to launch a beam.
+4)Click on laser,red container or greencontainer and drag to move.
+
+Keyboard:
+1)'Q' to quit the game
+2)'UP' to zoom in
+3)'DOWN' to zoom out
+4)'RIGHT' to pan right
+5)'LEFT' to pan left
+6)'N' to increase up bricks speed
+7)'M' to decrease bricks speed
+8)'SPACE' to launch the laser
+9)'S' to move up the laser
+10)'F' to move down the laser
+11)'A' to increase the launch angle
+12)'D' to decrease the launch angle
+13)alt + left to move green box left
+14)alt + right to move green box right
+15)ctrl + left to move red box left
+16)ctrl + right to move red box right
+
+About the game:
+
+1)Get a score as high as possible.
+2)There are bricks of red,green and black color.
+3)Collect red and green bricks in respective color boxes to get 2 points each.
+4)Hit black brick with laser to get 3 points.
+5)Breaking wrong bricks will give -2 points.
+6)Collecting black brick will end the game.
+7)Also,if 10 or more non-black bricks are destroyed then game is over.
+
+
+Features:
+
+1)No images used anywhere in the game. Everything is create by using shapes in openGL. This ensures the loading of the game is quick and efficient.
+2)Rendered text/numbers without the help of any libraries (only using shapes).
+3)Collision using boxes(not circles), this is a lot more effective when blocks are of uneven size.
+
+
+Note:
+
+All objects are sorted into different layers. Each layer is drawn one at a time. Some layers are more prefered and will be drawn last  whereas others will be drawn earlier (Like the background layer). Within a layer objects are drawn in a lexicographical order. These two together give you the ability to draw complex objects with ease.
