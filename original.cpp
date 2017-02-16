@@ -3,7 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <map>
-
+#include <ao/ao.h>
+#include <mpg123.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -11,7 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#define BITS 8
 using namespace std;
 
 struct VAO {
@@ -76,6 +77,58 @@ map <string, Sprite> point3;
 map <string, Sprite> neg;
 map <string, Sprite> endlabel;
 
+
+mpg123_handle *mh;
+unsigned char *buffer;
+size_t buffer_size;
+size_t done;
+int err;
+
+int driver;
+ao_device *dev;
+
+ao_sample_format format;
+int channels, encoding;
+long rate;
+
+void audio_init() {
+    /* initializations */
+    ao_initialize();
+    driver = ao_default_driver_id();
+    mpg123_init();
+    mh = mpg123_new(NULL, &err);
+    buffer_size = 2500;
+    buffer = (unsigned char*) malloc(buffer_size * sizeof(unsigned char));
+
+    /* open the file and get the decoding format */
+    mpg123_open(mh, "./background.mp3");
+    mpg123_getformat(mh, &rate, &channels, &encoding);
+
+    /* set the output format and open the output device */
+    format.bits = mpg123_encsize(encoding) * BITS;
+    format.rate = rate;
+    format.channels = channels;
+    format.byte_format = AO_FMT_NATIVE;
+    format.matrix = 0;
+    dev = ao_open_live(driver, &format, NULL);
+}
+
+void audio_play() {
+    /* decode and play */
+    if (mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK)
+        ao_play(dev, (char*) buffer, done);
+    else mpg123_seek(mh, 0, SEEK_SET);
+}
+
+void audio_close() {
+    /* clean up */
+    free(buffer);
+    ao_close(dev);
+    mpg123_close(mh);
+    mpg123_delete(mh);
+    mpg123_exit();
+    ao_shutdown();
+}
 
 
 int player_score=0;
@@ -1572,6 +1625,8 @@ int main (int argc, char** argv)
 
 	  initGL (window, width, height);
 
+	audio_init();  
+
     double last_update_time = glfwGetTime(), current_time;
 
     glfwGetCursorPos(window, &mouse_pos_x, &mouse_pos_y);
@@ -1581,6 +1636,8 @@ int main (int argc, char** argv)
 
         // OpenGL Draw commands
         draw(window);
+
+        audio_play();
 
         // Swap Frame Buffer in double buffering
         glfwSwapBuffers(window);
@@ -1595,7 +1652,7 @@ int main (int argc, char** argv)
             last_update_time = current_time;
         }
     }
-
+    audio_close();
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
